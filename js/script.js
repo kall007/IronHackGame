@@ -1,49 +1,11 @@
-// class Player {
-//   constructor(){
-//       this.width = 10;
-//       this.height = 15;
-//       this.positionX = 50;
-//       this.positionY = 0;
-//       this.domElm = null;
-
-//       this.createDomElement();
-//   }
-//   createDomElement(){
-//       // step1: create the element
-//       this.domElm = document.createElement("div");
-
-//       // step2: add content or modify
-//       this.domElm.setAttribute("id", "player");
-//       this.domElm.style.width = this.width + "vw"
-//       this.domElm.style.height = this.height + "vh"
-//       this.domElm.style.left = this.positionX + "vw";
-//       this.domElm.style.bottom = this.positionY + "vh";
-
-//       //step3: append to the dom: `parentElm.appendChild()`
-//       const boardElm = document.getElementById("game-board");
-//       boardElm.appendChild(this.domElm);
-//   }
-//   moveLeft() {
-//       if (this.positionX > 0) {
-//           this.positionX--;
-//           this.domElm.style.left = this.positionX + "vw";
-//       }
-//   }
-//   moveRight() {
-//       if (this.positionX + this.width < 100) {
-//           this.positionX++;
-//           this.domElm.style.left = this.positionX + "vw";
-//       }
-//   }
-// }
-
 class Player {
   constructor() {
-    this.width = 10;
-    this.height = 15;
+    this.width = 7;
+    this.height = 19;
     this.positionX = 50;
     this.positionY = 0;
     this.domElm = null;
+    this.score = 0;
 
     this.moveIncrement = 2; // Adjust this value to control the speed
 
@@ -75,16 +37,23 @@ class Player {
       this.domElm.style.left = this.positionX + "vw";
     }
   }
+
+  increaseScore() {
+    this.score++;
+    let scorePoints = document.querySelector("#playerPoints");
+    scorePoints.textContent = `Score: ${this.score}`;
+  }
 }
 
 class FallingObject {
   constructor(className) {
-    this.width = 10;
-    this.height = 15;
+    this.width = 5;
+    this.height = 10;
     this.positionX = Math.floor(Math.random() * (100 - this.width + 1));
     this.positionY = 100;
     this.domElm = null;
     this.className = className;
+    
 
     this.createDomElement();
   }
@@ -109,6 +78,8 @@ class FallingObject {
     this.positionY--;
     this.domElm.style.bottom = this.positionY + "vh";
   }
+
+
 }
 
 class Item extends FallingObject {
@@ -130,8 +101,13 @@ class Obstacle extends FallingObject {
 const player = new Player();
 const items = [];
 const obstacles = [];
-const level2 = document.getElementById("level");
+const level2 = document.getElementById("level2");
+const level3 = document.getElementById("level3")
+const level4 = document.getElementById("level4")
 
+
+
+//objects start falling faster after 10 seconds and shows the level 2
 setTimeout(() => {
   clearInterval(itemInterval);
   clearInterval(objectInterval);
@@ -140,7 +116,32 @@ setTimeout(() => {
     const newItem = new Item();
     ensureNoOverlap(newItem, items, obstacles);
     items.push(newItem);
-  }, 3500);
+  }, 3000);
+
+  objectInterval = setInterval(() => {
+    const newObstacle = new Obstacle();
+    ensureNoOverlap(newObstacle, obstacles, items);
+    obstacles.push(newObstacle);
+  }, 2000);
+
+  level2.hidden = false;
+
+  setTimeout(() => {
+    level2.hidden = true;
+  }, 1000);
+}, 10000);
+
+
+//objects start falling faster after 20 seconds and shows the level 3
+setTimeout(() => {
+  clearInterval(itemInterval);
+  clearInterval(objectInterval);
+
+  itemInterval = setInterval(() => {
+    const newItem = new Item();
+    ensureNoOverlap(newItem, items, obstacles);
+    items.push(newItem);
+  }, 2500);
 
   objectInterval = setInterval(() => {
     const newObstacle = new Obstacle();
@@ -148,12 +149,62 @@ setTimeout(() => {
     obstacles.push(newObstacle);
   }, 1000);
 
-  level2.hidden = false;
+  level3.hidden = false;
 
   setTimeout(() => {
-    level2.hidden = true;
+    level3.hidden = true;
   }, 1000);
-}, 7000);
+}, 20000);
+
+
+//objects start falling faster after 30 seconds and shows the level 4
+setTimeout(() => {
+  clearInterval(itemInterval);
+  clearInterval(objectInterval);
+
+  itemInterval = setInterval(() => {
+    const newItem = new Item();
+    ensureNoOverlap(newItem, items, obstacles);
+    items.push(newItem);
+  }, 2000);
+
+  objectInterval = setInterval(() => {
+    const newObstacle = new Obstacle();
+    ensureNoOverlap(newObstacle, obstacles, items);
+    obstacles.push(newObstacle);
+  }, 500);
+
+  level4.hidden = false;
+
+  setTimeout(() => {
+    level4.hidden = true;
+  }, 1000);
+}, 30000);
+
+//objects start falling faster after 30 seconds and shows the level 4
+setTimeout(() => {
+  clearInterval(itemInterval);
+  clearInterval(objectInterval);
+
+  itemInterval = setInterval(() => {
+    const newItem = new Item();
+    ensureNoOverlap(newItem, items, obstacles);
+    items.push(newItem);
+  }, 1500);
+
+  objectInterval = setInterval(() => {
+    const newObstacle = new Obstacle();
+    ensureNoOverlap(newObstacle, obstacles, items);
+    obstacles.push(newObstacle);
+  }, 250);
+
+  level5.hidden = false;
+
+  setTimeout(() => {
+    level5.hidden = true;
+  }, 1000);
+}, 40000);
+
 
 // generate items at a different interval
 let itemInterval = setInterval(() => {
@@ -211,6 +262,8 @@ setInterval(() => {
       if (fallingObject instanceof Item) {
         console.log("Item caught!");
         removeItem(fallingObject);
+        player.increaseScore();
+        
       } else if (fallingObject instanceof Obstacle) {
         console.log("Game over - Hit an obstacle!");
         location.href = "gameover.html";
@@ -241,3 +294,11 @@ document.addEventListener("keydown", (e) => {
     player.moveRight();
   }
 });
+
+
+const startSound = document.getElementById("starting-sound")
+const startButton = document.getElementById('start-button')
+startButton.addEventListener("click", () => {
+    startSound.play() 
+})
+
